@@ -1,0 +1,28 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
+
+WORKDIR /src
+
+COPY ["MiniEnv.Workers/MiniEnv.Workers.csproj", "MiniEnv.Workers/"]
+COPY ["MiniEnv.Application/MiniEnv.Application.csproj", "MiniEnv.Application/"]
+COPY ["MiniEnv.Domain/MiniEnv.Domain.csproj", "MiniEnv.Domain/"]
+COPY ["MiniEnv.Infrastructure/MiniEnv.Infrastructure.csproj", "MiniEnv.Infrastructure/"]
+
+RUN dotnet restore "MiniEnv.Workers/MiniEnv.Workers.csproj"
+
+COPY . .
+
+WORKDIR /src/MiniEnv.Workers
+
+RUN dotnet publish \
+	-c Release \
+	-o /app/publish \
+	--no-restore \
+	/p:UseAppHost=false
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS final
+
+WORKDIR /app
+
+COPY --from=build /app/publish .
+
+ENTRYPOINT ["dotnet", "MiniEnv.Workers.dll"]
