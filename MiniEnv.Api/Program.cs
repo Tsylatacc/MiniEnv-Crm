@@ -1,13 +1,14 @@
+using JasperFx;
+using Microsoft.EntityFrameworkCore;
 using MiniEnv.Application.Features.Authentication.ForgotPassword;
 using MiniEnv.Application.Features.Authentication.SignUps;
 using MiniEnv.Application.Features.Users.Invite;
 using MiniEnv.Infrastructure.Common.Abstractions.Authentication;
+using MiniEnv.Infrastructure.Common.Abstractions.Communication;
 using MiniEnv.Infrastructure.Extensions;
 using MiniEnv.Infrastructure.Extensions.DependencyInjection;
 using MiniEnv.Infrastructure.Persistence;
 using MiniEnv.Infrastructure.Persistence.Seeding;
-using JasperFx;
-using Microsoft.EntityFrameworkCore;
 using Wolverine;
 using Wolverine.EntityFrameworkCore;
 using Wolverine.FluentValidation;
@@ -52,6 +53,7 @@ builder.Host.UseWolverine(options =>
     options.Discovery.IncludeAssembly(typeof(MiniEnvDbContext).Assembly);
 
     options.UseFluentValidation();
+    options.CodeGeneration.AlwaysUseServiceLocationFor<IEmailService>();
 });
 builder.Services.AddWolverineHttp();
 

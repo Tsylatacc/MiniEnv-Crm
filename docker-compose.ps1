@@ -32,10 +32,8 @@ $env:JWT_REFRESH_EXPIRES_IN_DAYS = Get-UserSecret "Jwt:Refresh:ExpiresInDays"
 
 $env:FRONTEND_ACTIVEURL = Get-UserSecret "FrontEnd:ActiveUrl"
 
-$env:EMAILSETTINGS_USER = Get-UserSecret "EmailSettings:User"
-$env:EMAILSETTINGS_PORT = Get-UserSecret "EmailSettings:Port"
-$env:EMAILSETTINGS_PASSWORD = Get-UserSecret "EmailSettings:Password"
-$env:EMAILSETTINGS_HOST = Get-UserSecret "EmailSettings:Host"
-$env:EMAILSETTINGS_FROMNAME = Get-UserSecret "EmailSettings:FromName"
+$env:MAILERSEND_APIKEY = Get-UserSecret "MailerSend:ApiKey"
+$env:MAILERSEND_SENDEREMAIL = Get-UserSecret "MailerSend:SenderEmail"
+$env:MAILERSEND_SENDERNAME = Get-UserSecret "MailerSend:SenderName"
 
 docker compose up --build

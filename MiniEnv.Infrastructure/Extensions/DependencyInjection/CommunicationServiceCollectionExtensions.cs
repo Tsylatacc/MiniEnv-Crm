@@ -1,8 +1,8 @@
-﻿using MiniEnv.Infrastructure.Common.Abstractions.Communication;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using MiniEnv.Infrastructure.Common.Abstractions.Communication;
 using MiniEnv.Infrastructure.Communication;
 using MiniEnv.Infrastructure.Settings;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MiniEnv.Infrastructure.Extensions.DependencyInjection
 {
@@ -14,7 +14,8 @@ namespace MiniEnv.Infrastructure.Extensions.DependencyInjection
         {
             services.Configure<FrontEndSettings>(configuration.GetSection("FrontEnd"));
 
-            services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
+            services.Configure<MailerSendOptions>(configuration.GetSection("MailerSend"));
+            services.AddHttpClient<EmailService>();
             services.AddScoped<IEmailService, EmailService>();
 
             return services;
