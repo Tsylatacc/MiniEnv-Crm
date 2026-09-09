@@ -14,8 +14,8 @@ namespace MiniEnv.Infrastructure.Extensions.DependencyInjection
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            string dbConnection = configuration.GetConnectionString("MiniEnvdb")
-                ?? throw new InvalidOperationException("Connection string 'MiniEnvdb' not found.");
+            string dbConnection = configuration.GetConnectionString("db")
+                ?? throw new InvalidOperationException("Connection string 'db' not found.");
 
             services.AddDbContextWithWolverineManagedConjoinedTenancy<MiniEnvDbContext>(
                 (options, dbZone) => options.UseNpgsql(
