@@ -1,7 +1,9 @@
-﻿using MiniEnv.Infrastructure.Extensions;
-using MiniEnv.Infrastructure.Persistence;
+﻿using ImTools;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using MiniEnv.Infrastructure.Common.Abstractions.Communication;
+using MiniEnv.Infrastructure.Extensions;
+using MiniEnv.Infrastructure.Persistence;
 using Wolverine;
 using Wolverine.EntityFrameworkCore;
 using Wolverine.ErrorHandling;
@@ -44,6 +46,8 @@ builder.UseWolverine(options =>
     options.OnException<Exception>()
         .RetryWithCooldown(TimeSpan.FromMilliseconds(150))
         .Then.MoveToErrorQueue();
+
+    options.CodeGeneration.AlwaysUseServiceLocationFor<IEmailService>();
 });
 
 var host = builder.Build();

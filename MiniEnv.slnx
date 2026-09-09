@@ -1,4 +1,10 @@
 <Solution>
+  <Folder Name="/Itens de Solução/">
+    <File Path="docker-compose.ps1" />
+    <File Path="docker-compose.yml" />
+    <File Path="Dockerfile" />
+    <File Path="Dockerfile.worker" />
+  </Folder>
   <Project Path="MiniEnv.Api/MiniEnv.Api.csproj" />
   <Project Path="MiniEnv.AppHost/MiniEnv.AppHost.csproj" />
   <Project Path="MiniEnv.Application/MiniEnv.Application.csproj" />
