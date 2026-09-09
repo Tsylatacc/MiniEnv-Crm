@@ -28,8 +28,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Host.UseWolverine(options =>
 {
-    string dbConnection = builder.Configuration.GetConnectionString("MiniEnvdb")
-        ?? throw new InvalidOperationException("Connection string 'MiniEnvdb' not found.");
+    string dbConnection = builder.Configuration.GetConnectionString("db")
+        ?? throw new InvalidOperationException("Connection string 'db' not found.");
 
     string rabbitConnection = builder.Configuration.GetConnectionString("rabbitmq")
         ?? throw new InvalidOperationException("Connection string 'rabbitmq' not found.");
