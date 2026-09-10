@@ -18,13 +18,11 @@ public sealed class SignupContext : ISignUpContext
         _context.HttpContext?.User
         ?? throw new UnauthorizedAccessException("Unauthenticated user.");
 
-    public Guid TenantId => Guid.NewGuid();
-    public Guid SignUpId =>
-            Guid.Parse(
-                User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
-                ?? throw new UnauthorizedAccessException("SignUpId claim not found."));
+    public string SignUpTokenHash =>
+        User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
+        ?? throw new UnauthorizedAccessException("SignUpTokenHash claim not found.");
 
-    public string Email =>
-        User.FindFirst(JwtRegisteredClaimNames.Email)?.Value
-        ?? throw new UnauthorizedAccessException("Email claim not found.");
+    public Guid TenantId =>
+        Guid.Parse(User.FindFirst(CustomClaimTypes.TenantId)?.Value
+        ?? throw new UnauthorizedAccessException("TenantId claim not found."));
 }

@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace MiniEnv.Application.Features.Authentication.SignUps
+namespace MiniEnv.Application.Features.Authentication.VerifySignUps
 {
     public class SignUpCommandValidator
         : AbstractValidator<SignUpCommand>
@@ -9,7 +9,6 @@ namespace MiniEnv.Application.Features.Authentication.SignUps
         {
             RuleFor(x => x.Email)
                 .NotEmpty()
-                .EmailAddress()
                 .MaximumLength(255);
         }
     }

@@ -1,12 +1,12 @@
+using Microsoft.AspNetCore.Authorization;
 using MiniEnv.Application.Features.Authentication.ForgotPassword;
 using MiniEnv.Application.Features.Authentication.Login;
 using MiniEnv.Application.Features.Authentication.Refresh;
 using MiniEnv.Application.Features.Authentication.ResetPassword;
-using MiniEnv.Application.Features.Authentication.SignUps;
+using MiniEnv.Application.Features.Authentication.SignUpTokens;
 using MiniEnv.Application.Features.Authentication.VerifySignUps;
 using MiniEnv.Application.Features.Tenants.ActivateTenant;
 using MiniEnv.Infrastructure.Common.Abstractions.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Wolverine;
 using Wolverine.Http;
 
@@ -16,38 +16,46 @@ namespace MiniEnv.Api.Controllers
     {
         [AllowAnonymous]
         [WolverinePost("/api/auth/signup")]
-        public static async Task SignUp(
+        public static async Task<SignUpResponse> SignUp(
             SignUpCommand command,
-            IMessageBus bus,
-            CancellationToken cancellationToken)
-        {
-            await bus.InvokeAsync(command, cancellationToken);
-        }
-
-        [AllowAnonymous]
-        [WolverinePost("/api/auth/signup/verify")]
-        public static async Task VerifySignUp(
-            VerifySignUpCommand command,
             IMessageBus bus,
             HttpContext httpContext,
             CancellationToken cancellationToken)
         {
-            VerifySignUpResponse response = await bus.InvokeAsync<VerifySignUpResponse>(command, cancellationToken);
-            if (response.Token != null)
-            {
-                httpContext.Response.Cookies.Append(
-                    "signup_token",
-                    response.Token,
-                    new CookieOptions
-                    {
-                        HttpOnly = true,
-                        Secure = true,
-                        SameSite = SameSiteMode.Strict,
-                        IsEssential = true,
-                        Path = "/api/signup",
-                        Expires = response.ExpiresAt
-                    });
-            }
+            SignUpResult response = await bus.InvokeAsync<SignUpResult>(command, cancellationToken);
+            return new SignUpResponse(response.Token);
+        }
+
+        [Authorize(AuthenticationSchemes = "SignUp")]
+        [WolverinePost("/api/auth/signup/activate")]
+        public static async Task<ActivateTenantResponse> ActivateTenant(
+            IMessageBus bus,
+            ISignUpContext signUpContext,
+            HttpContext httpContext,
+            CancellationToken cancellationToken)
+        {
+            ActivateTenantResult result = await bus.InvokeForTenantAsync<ActivateTenantResult>(
+                signUpContext.TenantId.ToString(),
+                new ActivateTenantCommand(),
+                cancellationToken);
+
+            httpContext.Response.Cookies.Append(
+                "refresh_token",
+                result.RefreshToken,
+                new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict,
+                    IsEssential = true,
+                    Path = "/api/auth/refresh",
+                    Expires = result.RefreshTokenExpiresAt
+                });
+
+            return new ActivateTenantResponse(
+                result.BearerToken,
+                result.BearerTokenExpiresAt,
+                result.TenantId);
         }
 
         [AllowAnonymous]
@@ -85,7 +93,7 @@ namespace MiniEnv.Api.Controllers
             IMessageBus bus,
             CancellationToken cancellationToken)
         {
-            await bus.InvokeAsync(command, cancellationToken);
+            throw new NotImplementedException();
         }
 
         [AllowAnonymous]
@@ -95,39 +103,7 @@ namespace MiniEnv.Api.Controllers
             IMessageBus bus,
             CancellationToken cancellationToken)
         {
-            await bus.InvokeAsync(command, cancellationToken);
-        }
-
-        [Authorize(AuthenticationSchemes = "SignUp")]
-        [WolverinePost("/api/auth/signup/activate")]
-        public static async Task<ActivateTenantResponse> ActivateTenant(
-            IMessageBus bus,
-            ISignUpContext signUpContext,
-            HttpContext httpContext,
-            CancellationToken cancellationToken)
-        {
-            ActivateTenantResult result = await bus.InvokeForTenantAsync<ActivateTenantResult>(
-                signUpContext.TenantId.ToString(),
-                new ActivateTenantCommand(),
-                cancellationToken);
-
-            httpContext.Response.Cookies.Append(
-                "refresh_token",
-                result.RefreshToken,
-                new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.Strict,
-                    IsEssential = true,
-                    Path = "/api/auth/refresh",
-                    Expires = result.RefreshTokenExpiresAt
-                });
-
-            return new ActivateTenantResponse(
-                result.BearerToken,
-                result.BearerTokenExpiresAt,
-                result.TenantId);
+            throw new NotImplementedException();
         }
 
         [AllowAnonymous]

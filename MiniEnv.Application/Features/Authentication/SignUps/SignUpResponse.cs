@@ -1,4 +1,6 @@
-﻿namespace MiniEnv.Application.Features.Authentication.SignUps
+﻿namespace MiniEnv.Application.Features.Authentication.VerifySignUps
 {
-    public sealed record SignUpResponse();
+    public sealed record SignUpResponse(
+        string Token = default!,
+        DateTimeOffset ExpiresAt = default!);
 }

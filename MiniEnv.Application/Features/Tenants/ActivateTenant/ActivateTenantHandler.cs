@@ -23,9 +23,12 @@ namespace MiniEnv.Application.Features.Tenants.ActivateTenant
             ILogger<ActivateTenantHandler> logger,
             CancellationToken cancellationToken)
         {
-            SignUp? signUp = await db.SignUps.FindAsync(signUpContext.SignUpId, cancellationToken);
-            if (signUp is null) throw new KeyNotFoundException("Sign-up request not found.");
-            if (signUp.Status != SignUpStatus.Verified) throw new ConflictException("Invalid sign-up request.");
+            SignUpToken signUp = await db.SignUpTokens
+                .Where(x => x.TokenHash == signUpContext.SignUpTokenHash)
+                .SingleOrDefaultAsync(cancellationToken)
+                ?? throw new KeyNotFoundException("Sign-up request not found.");
+
+            if (signUp.UsedAt is not null) throw new ConflictException("Invalid sign-up request.");
 
             Guid tenantGuid = Guid.Parse(tenantId.Value);
             Tenant tenant = Tenant.Create(tenantGuid, signUp.Email);
@@ -45,7 +48,7 @@ namespace MiniEnv.Application.Features.Tenants.ActivateTenant
             await db.Roles.AddRangeAsync(roles.Values, cancellationToken);
             await db.Pipelines.AddRangeAsync(pipelines, cancellationToken);
 
-            signUp.SetToActivated();
+            signUp.SetUsed();
             JwtDto refreshDto = jwtService.GenerateRefreshToken();
             string refreshTokenHash = jwtService.HashToken(refreshDto.Token);
 

@@ -3,7 +3,6 @@
     public interface ISignUpContext
     {
         Guid TenantId { get; }
-        Guid SignUpId { get; }
-        string Email { get; }
+        string SignUpTokenHash { get; }
     }
 }

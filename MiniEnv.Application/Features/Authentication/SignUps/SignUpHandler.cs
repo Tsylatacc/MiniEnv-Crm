@@ -1,33 +1,36 @@
-﻿using MiniEnv.Domain.Entities;
-using MiniEnv.Domain.Enums;
-using MiniEnv.Infrastructure.Common.Abstractions.Authentication;
-using MiniEnv.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Wolverine;
+using MiniEnv.Application.Features.Authentication.SignUpTokens;
+using MiniEnv.Application.Features.Authentication.VerifySignUps;
+using MiniEnv.Domain.Entities;
+using MiniEnv.Infrastructure.Common.Abstractions.Authentication;
+using MiniEnv.Infrastructure.DTOs.Common.Authentication;
+using MiniEnv.Infrastructure.Persistence;
 
 namespace MiniEnv.Application.Features.Authentication.SignUps
 {
     public sealed class SignUpHandler
     {
-        public async Task Handle(
+        public async Task<SignUpResult> Handle(
             SignUpCommand command,
             MiniEnvDbContext db,
             IJwtService jwtService,
-            IMessageBus bus,
             ILogger<SignUpHandler> logger,
             CancellationToken cancellationToken)
         {
-            SignUp? signUp = await db.SignUps.SingleOrDefaultAsync(x => x.Email == command.Email, cancellationToken);
-            if (signUp is not null && signUp.Status != SignUpStatus.Expired) return;
+            SignUpToken? signUp = await db.SignUpTokens.SingleOrDefaultAsync(x => x.Email == command.Email, cancellationToken);
+            if (signUp is not null && signUp.UsedAt is not null)
+                throw new InvalidOperationException($"Invalid sign-up {signUp.Id} status.");
 
-            string signUpToken = jwtService.GenerateToken(4);
+            string signUpToken = jwtService.GenerateToken(32);
             string signUpTokenHash = jwtService.HashToken(signUpToken);
 
-            SignUp newSignUp = SignUp.Create(command.Email, signUpTokenHash, SignUpStatus.Pending);
-            await db.SignUps.AddAsync(newSignUp, cancellationToken);
-            await bus.PublishAsync(new SignUpRequested(newSignUp.Id, newSignUp.Email, signUpToken));
-            logger.LogInformation("Sign-up token issued for sign-up {SignUpId}", newSignUp.Id);
+            SignUpToken newSignUp = SignUpToken.Create(command.Email, signUpTokenHash, DateTimeOffset.UtcNow.AddMinutes(15));
+            await db.SignUpTokens.AddAsync(newSignUp, cancellationToken);
+
+            JwtDto dto = jwtService.GenerateSignUpToken(signUpTokenHash, Guid.NewGuid());
+            logger.LogInformation("Sign-up verified for {SignUpId}", newSignUp.Id);
+            return new SignUpResult(dto.Token);
         }
     }
 }

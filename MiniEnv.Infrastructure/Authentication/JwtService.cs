@@ -56,12 +56,12 @@ namespace MiniEnv.Infrastructure.Authentication
                 ExpiresAt = expiresAt
             };
         }
-        public JwtDto GenerateSignUpToken(Guid signUpId, string email)
+        public JwtDto GenerateSignUpToken(string signUpTokenHash, Guid tenantId)
         {
             Claim[] claims =
             {
-                new Claim(JwtRegisteredClaimNames.Sub, signUpId.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, email),
+                new Claim(JwtRegisteredClaimNames.Sub, signUpTokenHash),
+                new Claim(CustomClaimTypes.TenantId, tenantId.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

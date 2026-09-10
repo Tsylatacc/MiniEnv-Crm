@@ -1,12 +1,10 @@
 ﻿using MiniEnv.Application.Features.Users.AcceptInvitation;
 using MiniEnv.Application.Features.Users.Invite;
-using MiniEnv.Application.Features.Users.RevokeInvitation;
 using MiniEnv.Domain.SystemDefaults;
 using MiniEnv.Infrastructure.Authorization.Permissions;
 using MiniEnv.Infrastructure.Common.Abstractions.Authentication;
 using MiniEnv.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
 using Wolverine;
 using Wolverine.Http;
 
@@ -22,10 +20,7 @@ namespace MiniEnv.Api.Controllers
             IMessageBus bus,
             CancellationToken cancellationToken)
         {
-            await bus.InvokeForTenantAsync(
-                currentUser.TenantId.ToString(),
-                command,
-                cancellationToken);
+            throw new NotImplementedException();
         }
 
         [AllowAnonymous]
@@ -37,17 +32,7 @@ namespace MiniEnv.Api.Controllers
             MiniEnvDbContext lookupDb,
             CancellationToken cancellationToken)
         {
-            string invitationTokenHash = jwtService.HashToken(command.InvitationToken);
-
-            string? tenantId = await lookupDb.Invitations
-                .IgnoreQueryFilters()
-                .Where(x => x.TokenHash == invitationTokenHash)
-                .Select(x => x.TenantId)
-                .SingleOrDefaultAsync(cancellationToken);
-
-            if (tenantId is null) return;
-
-            await bus.InvokeForTenantAsync(tenantId, command, cancellationToken);
+            throw new NotImplementedException();
         }
 
         [RequirePermission(Permissions.Names.ManageUsers)]
@@ -58,10 +43,7 @@ namespace MiniEnv.Api.Controllers
             IMessageBus bus,
             CancellationToken cancellationToken)
         {
-            await bus.InvokeForTenantAsync(
-                currentUser.TenantId.ToString(),
-                new RevokeInvitationCommand(invitationId),
-                cancellationToken);
+            throw new NotImplementedException();
         }
     }
 }
