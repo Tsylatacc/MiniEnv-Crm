@@ -1,10 +1,7 @@
 using JasperFx;
 using Microsoft.EntityFrameworkCore;
-using MiniEnv.Application.Features.Authentication.ForgotPassword;
-using MiniEnv.Application.Features.Authentication.SignUps;
-using MiniEnv.Application.Features.Users.Invite;
+using MiniEnv.Application.Features.Authentication.VerifySignUps;
 using MiniEnv.Infrastructure.Common.Abstractions.Authentication;
-using MiniEnv.Infrastructure.Common.Abstractions.Communication;
 using MiniEnv.Infrastructure.Extensions;
 using MiniEnv.Infrastructure.Extensions.DependencyInjection;
 using MiniEnv.Infrastructure.Persistence;
@@ -14,7 +11,6 @@ using Wolverine.EntityFrameworkCore;
 using Wolverine.FluentValidation;
 using Wolverine.Http;
 using Wolverine.Postgresql;
-using Wolverine.RabbitMQ;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureHostOptions(opts => opts.ShutdownTimeout = TimeSpan.FromSeconds(30));
@@ -32,28 +28,14 @@ builder.Host.UseWolverine(options =>
     string dbConnection = builder.Configuration.GetConnectionString("db")
         ?? throw new InvalidOperationException("Connection string 'db' not found.");
 
-    string rabbitConnection = builder.Configuration.GetConnectionString("rabbitmq")
-        ?? throw new InvalidOperationException("Connection string 'rabbitmq' not found.");
-
     options.PersistMessagesWithPostgresql(dbConnection);
     options.UseEntityFrameworkCoreTransactions();
     options.Policies.AutoApplyTransactions();
-    options.UseRabbitMq(rabbitConnection).AutoProvision();
-
-    options.PublishMessage<SignUpRequested>()
-        .ToRabbitExchange("signup-requested");
-
-    options.PublishMessage<PasswordResetRequested>()
-        .ToRabbitExchange("password-reset-requested");
-
-    options.PublishMessage<InvitationRequested>()
-        .ToRabbitExchange("user-invitation-requested");
 
     options.Discovery.IncludeAssembly(typeof(SignUpCommand).Assembly);
     options.Discovery.IncludeAssembly(typeof(MiniEnvDbContext).Assembly);
 
     options.UseFluentValidation();
-    options.CodeGeneration.AlwaysUseServiceLocationFor<IEmailService>();
 });
 builder.Services.AddWolverineHttp();
 

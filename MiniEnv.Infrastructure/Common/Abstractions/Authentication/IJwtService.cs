@@ -4,7 +4,7 @@ namespace MiniEnv.Infrastructure.Common.Abstractions.Authentication
 {
     public interface IJwtService
     {
-        JwtDto GenerateSignUpToken(Guid signUpId, string email);
+        JwtDto GenerateSignUpToken(string signUpTokenHash, Guid tenantId);
         JwtDto GenerateRefreshToken();
         JwtDto GenerateBearerToken(Guid userId, Guid tenantId, string email);
 

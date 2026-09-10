@@ -15,7 +15,6 @@ function Get-UserSecret {
 }
 
 $env:MINIENV_DB_CONNECTION = Get-UserSecret "ConnectionStrings:db"
-$env:MINIENV_RABBITMQ_CONNECTION = Get-UserSecret "ConnectionStrings:rabbitmq"
 $env:MINIENV_REDIS_CONNECTION = Get-UserSecret "ConnectionStrings:redis"
 
 $env:JWT_BEARER_KEY = Get-UserSecret "Jwt:Bearer:Key"
@@ -31,9 +30,5 @@ $env:JWT_SIGNUP_AUDIENCE = Get-UserSecret "Jwt:SignUp:Audience"
 $env:JWT_REFRESH_EXPIRES_IN_DAYS = Get-UserSecret "Jwt:Refresh:ExpiresInDays"
 
 $env:FRONTEND_ACTIVEURL = Get-UserSecret "FrontEnd:ActiveUrl"
-
-$env:MAILERSEND_APIKEY = Get-UserSecret "MailerSend:ApiKey"
-$env:MAILERSEND_SENDEREMAIL = Get-UserSecret "MailerSend:SenderEmail"
-$env:MAILERSEND_SENDERNAME = Get-UserSecret "MailerSend:SenderName"
 
 docker compose up --build

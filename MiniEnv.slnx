@@ -3,13 +3,13 @@
     <File Path="docker-compose.ps1" />
     <File Path="docker-compose.yml" />
     <File Path="Dockerfile" />
-    <File Path="Dockerfile.worker" />
+    <File Path="MiniEnv.Api/Program.cs" />
     <File Path="README.md" />
   </Folder>
-  <Project Path="MiniEnv.Api/MiniEnv.Api.csproj" />
-  <Project Path="MiniEnv.AppHost/MiniEnv.AppHost.csproj" />
-  <Project Path="MiniEnv.Application/MiniEnv.Application.csproj" />
-  <Project Path="MiniEnv.Domain/MiniEnv.Domain.csproj" />
-  <Project Path="MiniEnv.Infrastructure/MiniEnv.Infrastructure.csproj" />
-  <Project Path="MiniEnv.Workers/MiniEnv.Workers.csproj" />
+  <Folder Name="/MiniENv.Crm/">
+    <Project Path="MiniEnv.Api/MiniEnv.Api.csproj" />
+    <Project Path="MiniEnv.Application/MiniEnv.Application.csproj" />
+    <Project Path="MiniEnv.Domain/MiniEnv.Domain.csproj" />
+    <Project Path="MiniEnv.Infrastructure/MiniEnv.Infrastructure.csproj" />
+  </Folder>
 </Solution>
