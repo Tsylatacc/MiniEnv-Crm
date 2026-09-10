@@ -4,6 +4,7 @@
     <File Path="docker-compose.yml" />
     <File Path="Dockerfile" />
     <File Path="Dockerfile.worker" />
+    <File Path="README.md" />
   </Folder>
   <Project Path="MiniEnv.Api/MiniEnv.Api.csproj" />
   <Project Path="MiniEnv.AppHost/MiniEnv.AppHost.csproj" />
